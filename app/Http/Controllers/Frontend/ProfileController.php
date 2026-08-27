@@ -17,43 +17,43 @@ class ProfileController extends Controller
     }
 
     public function update(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = auth()->user();
 
-        $request->validate([
-            'name' => 'required|string|max:100',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:6|confirmed',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:100',
+        'email' => 'required|email|unique:users,email,' . $user->id,
+        'no_hp' => 'nullable|string|max:20',
+        'alamat' => 'nullable|string|max:500',
+        'password' => 'nullable|min:6|confirmed',
+        'avatar' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    ]);
 
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-        ];
+    $data = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'no_hp' => $request->no_hp,
+        'alamat' => $request->alamat,
+    ];
 
-        if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
-        }
-
-        // Upload avatar baru
-        if ($request->hasFile('avatar')) {
-            if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
-        }
-
-        // Hapus avatar jika dicentang
-        if ($request->has('hapus_avatar') && $user->avatar) {
-            if (Storage::disk('public')->exists($user->avatar)) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-            $data['avatar'] = null;
-        }
-
-        $user->update($data);
-
-        return redirect()->route('profile.edit')->with('success', 'Profil berhasil diperbarui');
+    if ($request->filled('password')) {
+        $data['password'] = bcrypt($request->password);
     }
+
+    if ($request->has('hapus_foto') && $user->avatar) {
+        \Storage::disk('public')->delete($user->avatar);
+        $data['avatar'] = null;
+    }
+
+    if ($request->hasFile('avatar')) {
+        if ($user->avatar) {
+            \Storage::disk('public')->delete($user->avatar);
+        }
+        $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+    }
+
+    $user->update($data);
+
+    return back()->with('success', 'Profil berhasil diperbarui');
+}
 }

@@ -26,11 +26,13 @@ class ProdukController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_produk' => 'required',
-            'kategori_id' => 'required',
-            'harga' => 'required|numeric',
-            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-        ]);
+    'nama_produk' => 'required',
+    'kategori_id' => 'required',
+    'harga' => 'required|numeric',
+    'satuan' => 'nullable|string|max:20',   // ← TAMBAH
+    'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    'badge' => 'nullable|in:terlaris,favorit,baru',
+]);
 
         $fotoPath = null;
         if ($request->hasFile('foto')) {
@@ -38,15 +40,17 @@ class ProdukController extends Controller
         }
 
         Produk::create([
-            'kategori_id' => $request->kategori_id,
-            'nama_produk' => $request->nama_produk,
-            'slug' => Str::slug($request->nama_produk),
-            'deskripsi' => $request->deskripsi,
-            'harga' => $request->harga,
-            'stok' => $request->stok ?? 0,
-            'is_popular' => $request->has('is_popular'),
-            'foto' => $fotoPath,
-        ]);
+    'kategori_id' => $request->kategori_id,
+    'nama_produk' => $request->nama_produk,
+    'slug' => Str::slug($request->nama_produk),
+    'deskripsi' => $request->deskripsi,
+    'harga' => $request->harga,
+    'satuan' => $request->satuan ?? 'porsi',   // ← TAMBAH
+    'stok' => $request->stok ?? 0,
+    'is_popular' => $request->has('is_popular'),
+    'foto' => $fotoPath,
+    'badge' => $request->badge ?: null,
+]);
 
         return redirect()->route('admin.produk.index')->with('success', 'Menu berhasil ditambahkan');
     }
@@ -61,23 +65,27 @@ class ProdukController extends Controller
     public function update(Request $request, $id)
 {
     $request->validate([
-        'nama_produk' => 'required',
-        'kategori_id' => 'required',
-        'harga' => 'required|numeric',
-        'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
-    ]);
+    'nama_produk' => 'required',
+    'kategori_id' => 'required',
+    'harga' => 'required|numeric',
+    'satuan' => 'nullable|string|max:20',   // ← TAMBAH
+    'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+    'badge' => 'nullable|in:terlaris,favorit,baru',
+]);
 
     $produk = Produk::findOrFail($id);
 
     $data = [
-        'kategori_id' => $request->kategori_id,
-        'nama_produk' => $request->nama_produk,
-        'slug' => Str::slug($request->nama_produk),
-        'deskripsi' => $request->deskripsi,
-        'harga' => $request->harga,
-        'stok' => $request->stok ?? 0,
-        'is_popular' => $request->has('is_popular'),
-    ];
+    'kategori_id' => $request->kategori_id,
+    'nama_produk' => $request->nama_produk,
+    'slug' => Str::slug($request->nama_produk),
+    'deskripsi' => $request->deskripsi,
+    'harga' => $request->harga,
+    'satuan' => $request->satuan ?? 'porsi',   // ← TAMBAH
+    'stok' => $request->stok ?? 0,
+    'is_popular' => $request->has('is_popular'),
+    'badge' => $request->badge ?: null,
+];
 
     // Hapus foto jika dicentang
     if ($request->has('hapus_foto') && $produk->foto) {

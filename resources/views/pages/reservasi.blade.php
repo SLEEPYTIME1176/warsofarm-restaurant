@@ -59,13 +59,73 @@
 
             <div class="form-group">
                 <label>Catatan (opsional)</label>
-                <textarea name="catatan" rows="3" placeholder="Contoh: Meja dekat jendela, ulang tahun, dll">{{ old('catatan') }}</textarea>
+                <textarea name="catatan"
+                          rows="4"
+                          placeholder="Contoh:&#10;• Dekat jendela&#10;• Membawa bayi&#10;• Merayakan ulang tahun&#10;• Kursi roda">{{ old('catatan') }}</textarea>
+                <small style="color:#8b7355; font-size:12.5px;">
+                    Tulis kebutuhan khusus agar kami bisa siapkan lebih baik.
+                </small>
+            </div>
+
+            {{-- Info jam operasional --}}
+            <div class="reservasi-info-box">
+                <p style="margin:0 0 8px;">
+                    <strong>🕐 Reservasi tersedia</strong><br>
+                    Setiap hari pukul <strong>09.00 – 17.00 WIB</strong>
+                </p>
+                <p style="margin:0;">
+                    Reservasi minimal dilakukan <strong>30 menit</strong> sebelum kedatangan.
+                </p>
             </div>
 
             <button type="submit" class="btn btn-primary" style="width:100%; padding:16px; font-size:16px;">
                 Konfirmasi Reservasi
             </button>
+
+            {{-- Info konfirmasi --}}
+            <p class="reservasi-confirm-note">
+                Setelah reservasi dikirim, tim Warso akan menghubungi Anda untuk konfirmasi.
+                Status dapat dilihat di
+                <a href="{{ route('riwayat.reservasi') }}" style="color:#9c5638; font-weight:600;">Riwayat Reservasi</a>
         </form>
     </div>
 </div>
+
+<style>
+.reservasi-info-box {
+    background: #fff8f0;
+    border: 1px solid #f0e0d0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13.5px;
+    color: #5c4033;
+    line-height: 1.55;
+}
+
+.reservasi-confirm-note {
+    margin-top: 14px;
+    margin-bottom: 0;
+    text-align: center;
+    font-size: 13px;
+    color: #8b7355;
+    line-height: 1.5;
+}
+
+.form-card textarea[name="catatan"] {
+    border-radius: 12px;
+    border: 1.5px solid #e8ddd0;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+.form-card textarea[name="catatan"]:focus {
+    outline: none;
+    border-color: #9c5638;
+}
+</style>
 @endsection

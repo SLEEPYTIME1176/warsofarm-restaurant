@@ -73,11 +73,13 @@ class PromoController extends Controller
         ]);
 
         $data = $request->only([
-            'judul', 'kode_promo', 'deskripsi', 'tipe', 'nilai',
-            'min_pembelian', 'tanggal_mulai', 'tanggal_selesai'
-        ]);
-        $data['is_active'] = $request->has('is_active');
-        $data['min_pembelian'] = $request->min_pembelian ?? 0;
+    'judul', 'kode_promo', 'deskripsi', 'tipe', 'nilai',
+    'min_pembelian', 'tanggal_mulai', 'tanggal_selesai'
+]);
+
+$data['is_active'] = $request->has('is_active');
+$data['min_pembelian'] = $request->min_pembelian ?? 0;
+$data['kuota'] = $request->filled('kuota') ? (int) $request->kuota : null;
 
         if ($request->hasFile('gambar')) {
             if ($promo->gambar && Storage::disk('public')->exists($promo->gambar)) {

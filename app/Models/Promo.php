@@ -10,7 +10,7 @@ class Promo extends Model
     protected $fillable = [
         'judul', 'kode_promo', 'deskripsi', 'tipe', 'nilai',
         'min_pembelian', 'tanggal_mulai', 'tanggal_selesai',
-        'is_active', 'gambar'
+        'is_active', 'gambar', 'kuota', 'terpakai'
     ];
 
     protected $casts = [

@@ -26,6 +26,7 @@ class ReservasiController extends Controller
         ]);
 
         Reservasi::create([
+            'user_id' => auth()->id(),
             'nama' => $request->nama,
             'email' => $request->email,
             'telepon' => $request->telepon,
@@ -38,4 +39,36 @@ class ReservasiController extends Controller
 
         return redirect()->route('reservasi')->with('success', 'Reservasi berhasil dikirim! Kami akan segera menghubungi Anda.');
     }
+
+    public function riwayat()
+    {
+        $reservasis = Reservasi::where('user_id', auth()->id())
+            ->latest()
+            ->get();
+
+        return view('pages.riwayat-reservasi', compact('reservasis'));
+    }
+
+    public function batal(Request $request, $id)
+{
+    $reservasi = \App\Models\Reservasi::where('id', $id)
+        ->where('user_id', auth()->id())
+        ->firstOrFail();
+
+    // Hanya boleh batal jika masih pending
+    if ($reservasi->status !== 'pending') {
+        return back()->with('error', 'Reservasi tidak bisa dibatalkan karena sudah diproses.');
+    }
+
+    $request->validate([
+        'alasan_batal' => 'required|string|max:255',
+    ]);
+
+    $reservasi->update([
+        'status' => 'cancelled',
+        'alasan_batal' => $request->alasan_batal,
+    ]);
+
+    return back()->with('success', 'Reservasi Anda telah dibatalkan. Semoga lain waktu bisa berkunjung ke Warso 🌿');
+}
 }

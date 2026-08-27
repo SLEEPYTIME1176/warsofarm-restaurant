@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produk;
+use App\Models\Promo;
 
 class HomeController extends Controller
 {
@@ -14,6 +15,12 @@ class HomeController extends Controller
             ->take(4)
             ->get();
 
-        return view('pages.home', compact('popular'));
+        $promos = Promo::where('is_active', 1)
+            ->whereDate('tanggal_mulai', '<=', now()->toDateString())
+            ->whereDate('tanggal_selesai', '>=', now()->toDateString())
+            ->latest()
+            ->get();
+
+        return view('pages.home', compact('popular', 'promos'));
     }
 }

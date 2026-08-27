@@ -9,12 +9,15 @@ use App\Models\Kategori;
 class MenuController extends Controller
 {
     public function index()
-    {
-        $produks = Produk::with('kategori')->latest()->get();
-        $kategoris = Kategori::all();
+{
+    $kategoris = \App\Models\Kategori::with(['produks' => function ($q) {
+        $q->orderBy('nama_produk');
+    }])->get();
 
-        return view('pages.menu', compact('produks', 'kategoris'));
-    }
+    $produks = \App\Models\Produk::with('kategori')->latest()->get();
+
+    return view('pages.menu', compact('kategoris', 'produks'));
+}
 
     public function show($slug)
 {

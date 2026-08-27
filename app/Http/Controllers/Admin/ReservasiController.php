@@ -15,16 +15,27 @@ class ReservasiController extends Controller
     }
 
     public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:pending,confirmed,cancelled',
-        ]);
+{
+    $request->validate([
+        'status' => 'required|in:pending,confirmed,done,cancelled',
+        'alasan_batal' => 'nullable|string|max:255',
+    ]);
 
-        $reservasi = Reservasi::findOrFail($id);
-        $reservasi->update(['status' => $request->status]);
+    $reservasi = \App\Models\Reservasi::findOrFail($id);
 
-        return redirect()->route('admin.reservasi.index')->with('success', 'Status reservasi berhasil diubah');
+    $data = ['status' => $request->status];
+
+    // Simpan alasan hanya saat dibatalkan
+    if ($request->status === 'cancelled') {
+        $data['alasan_batal'] = $request->alasan_batal ?: 'Dibatalkan oleh admin';
+    } else {
+        $data['alasan_batal'] = null;
     }
+
+    $reservasi->update($data);
+
+    return back()->with('success', 'Status reservasi berhasil diubah');
+}
 
     public function destroy($id)
     {

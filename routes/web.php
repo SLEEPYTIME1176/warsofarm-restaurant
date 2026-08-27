@@ -9,6 +9,7 @@ use App\Http\Controllers\Frontend\MenuController;
 use App\Http\Controllers\Frontend\ReservasiController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\Frontend\PaketController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
@@ -27,14 +28,18 @@ use App\Http\Controllers\Auth\GoogleController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/menu', [MenuController::class, 'index'])->name('menu');
 Route::get('/menu/{slug}', [MenuController::class, 'show'])->name('menu.show');
-Route::get('/paket', fn() => view('pages.paket'))->name('paket');
+Route::get('/paket', [PaketController::class, 'index'])->name('paket');
 Route::get('/lokasi', fn() => view('pages.lokasi'))->name('lokasi');
 Route::get('/kontak', fn() => view('pages.kontak'))->name('kontak');
 Route::get('/keranjang', fn() => view('pages.keranjang'))->name('keranjang');
+Route::get('/promo/{id}', [App\Http\Controllers\Frontend\PromoController::class, 'show'])
+    ->name('promo.show');
+Route::post('/promo/cek', [App\Http\Controllers\Frontend\PromoController::class, 'cek'])
+    ->name('promo.cek');
 
 // Reservasi
 Route::get('/reservasi', [ReservasiController::class, 'index'])->name('reservasi');
-Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store');
+Route::post('/reservasi', [ReservasiController::class, 'store'])->name('reservasi.store')->middleware('auth');
 
 // Google Login
 Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
@@ -53,8 +58,18 @@ Route::post('/logout', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+
     Route::get('/riwayat', [OrderController::class, 'index'])->name('riwayat');
     Route::post('/checkout', [OrderController::class, 'checkout'])->name('checkout');
+
+    Route::post('/pesanan/{id}/batal', [OrderController::class, 'cancelByUser'])->name('order.cancel.user');
+    Route::post('/pesanan/{id}/ajukan-batal', [OrderController::class, 'requestCancel'])->name('order.request.cancel');
+
+    Route::get('/riwayat-reservasi', [ReservasiController::class, 'riwayat'])
+        ->name('riwayat.reservasi');
+
+        Route::post('/reservasi/{id}/batal', [ReservasiController::class, 'batal'])
+        ->name('reservasi.batal');
 });
 
 // ==================== ADMIN AUTH ====================
@@ -76,14 +91,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
     
     // Reservasi
     Route::get('/reservasi', [AdminReservasiController::class, 'index'])->name('reservasi.index');
-    Route::put('/reservasi/{id}/status', [AdminReservasiController::class, 'updateStatus'])->name('reservasi.status');
+    Route::post('/reservasi/{id}/status', [AdminReservasiController::class, 'updateStatus'])->name('reservasi.status');
     Route::delete('/reservasi/{id}', [AdminReservasiController::class, 'destroy'])->name('reservasi.destroy');
 
     // Pesanan (Order)
     Route::get('/order', [AdminOrderController::class, 'index'])->name('order.index');
     Route::put('/order/{id}/status', [AdminOrderController::class, 'updateStatus'])->name('order.status');
     Route::delete('/order/{id}', [AdminOrderController::class, 'destroy'])->name('order.destroy');
+    Route::post('/order/{id}/cancel', [AdminOrderController::class, 'cancel'])->name('order.cancel');
 
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
 });
+

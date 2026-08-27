@@ -30,10 +30,33 @@
     </div>
 
     <div style="margin-bottom:20px;">
-        <label style="display:block; font-weight:600; margin-bottom:8px;">Harga</label>
-        <input type="number" name="harga" value="{{ $produk->harga }}" required min="0"
-               style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;">
-    </div>
+    <label style="display:block; font-weight:600; margin-bottom:8px;">Harga</label>
+    <input type="number" name="harga" value="{{ $produk->harga }}" required min="0"
+           style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;">
+</div>
+
+<div class="form-group">
+    <label>Badge (opsional)</label>
+    <select name="badge">
+        <option value="">— Tidak ada —</option>
+        <option value="terlaris" {{ old('badge', $produk->badge) == 'terlaris' ? 'selected' : '' }}>🔥 Terlaris</option>
+        <option value="favorit" {{ old('badge', $produk->badge) == 'favorit' ? 'selected' : '' }}>⭐ Favorit</option>
+        <option value="baru" {{ old('badge', $produk->badge) == 'baru' ? 'selected' : '' }}>🆕 Baru</option>
+    </select>
+</div>
+
+{{-- ===== SATUAN ===== --}}
+<div style="margin-bottom:20px;">
+    <label style="display:block; font-weight:600; margin-bottom:8px;">Satuan</label>
+    <select name="satuan"
+            style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;">
+        <option value="porsi" {{ old('satuan', $produk->satuan ?? 'porsi') == 'porsi' ? 'selected' : '' }}>Porsi</option>
+        <option value="kg" {{ old('satuan', $produk->satuan ?? '') == 'kg' ? 'selected' : '' }}>Kg</option>
+        <option value="500g" {{ old('satuan', $produk->satuan ?? '') == '500g' ? 'selected' : '' }}>500g</option>
+        <option value="250g" {{ old('satuan', $produk->satuan ?? '') == '250g' ? 'selected' : '' }}>250g</option>
+        <option value="pax" {{ old('satuan', $produk->satuan ?? '') == 'pax' ? 'selected' : '' }}>Pax</option>
+    </select>
+</div>
 
     <div style="margin-bottom:20px;">
         <label style="display:block; font-weight:600; margin-bottom:8px;">Stok</label>

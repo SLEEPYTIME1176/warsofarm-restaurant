@@ -1,108 +1,100 @@
 @extends('admin.layouts.app')
 
 @section('content')
-    <h1 class="page-title">Laporan</h1>
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:28px;">
+    <h1 class="page-title" style="margin:0;">Laporan</h1>
+</div>
 
-    <!-- Ringkasan -->
-    <div class="stats" style="margin-bottom: 30px;">
-        <div class="stat-card">
-            <h3>Total Reservasi</h3>
-            <p>{{ $totalReservasi }}</p>
+{{-- STAT CARDS --}}
+<div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:18px; margin-bottom:28px;">
+    <div style="background:white; border-radius:16px; padding:22px 20px; box-shadow:0 4px 18px rgba(0,0,0,0.05);">
+        <div style="font-size:13px; color:#888; margin-bottom:6px;">Total Reservasi</div>
+        <div style="font-size:28px; font-weight:700; color:#3f2a20;">{{ $totalReservasi ?? 0 }}</div>
+    </div>
+    <div style="background:white; border-radius:16px; padding:22px 20px; box-shadow:0 4px 18px rgba(0,0,0,0.05);">
+        <div style="font-size:13px; color:#888; margin-bottom:6px;">Pending</div>
+        <div style="font-size:28px; font-weight:700; color:#d4a017;">{{ $pending ?? 0 }}</div>
+    </div>
+    <div style="background:white; border-radius:16px; padding:22px 20px; box-shadow:0 4px 18px rgba(0,0,0,0.05);">
+        <div style="font-size:13px; color:#888; margin-bottom:6px;">Confirmed</div>
+        <div style="font-size:28px; font-weight:700; color:#27ae60;">{{ $confirmed ?? 0 }}</div>
+    </div>
+    <div style="background:white; border-radius:16px; padding:22px 20px; box-shadow:0 4px 18px rgba(0,0,0,0.05);">
+        <div style="font-size:13px; color:#888; margin-bottom:6px;">Cancelled</div>
+        <div style="font-size:28px; font-weight:700; color:#e74c3c;">{{ $cancelled ?? 0 }}</div>
+    </div>
+</div>
+
+{{-- 2 KOLOM --}}
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:28px;">
+    {{-- Ringkasan Lainnya --}}
+    <div class="card" style="padding:22px 24px;">
+        <h3 style="margin:0 0 16px; font-size:16px; color:#3f2a20;">Ringkasan Lainnya</h3>
+        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0e6d8; font-size:14px;">
+            <span style="color:#666;">Reservasi Bulan Ini</span>
+            <strong>{{ $reservasiBulanIni ?? 0 }}</strong>
         </div>
-        <div class="stat-card">
-            <h3>Pending</h3>
-            <p style="color:#e67e22;">{{ $pending }}</p>
+        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0e6d8; font-size:14px;">
+            <span style="color:#666;">Total Menu</span>
+            <strong>{{ $totalMenu ?? 0 }}</strong>
         </div>
-        <div class="stat-card">
-            <h3>Confirmed</h3>
-            <p style="color:#27ae60;">{{ $confirmed }}</p>
+        <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0e6d8; font-size:14px;">
+            <span style="color:#666;">Menu Populer</span>
+            <strong>{{ $menuPopuler ?? 0 }}</strong>
         </div>
-        <div class="stat-card">
-            <h3>Cancelled</h3>
-            <p style="color:#e74c3c;">{{ $cancelled }}</p>
+        <div style="display:flex; justify-content:space-between; padding:12px 0; font-size:14px;">
+            <span style="color:#666;">Total Kategori</span>
+            <strong>{{ $totalKategori ?? 0 }}</strong>
         </div>
     </div>
 
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom:30px;">
-        <!-- Info Tambahan -->
-        <div class="card">
-            <h2 style="font-size:17px; margin-bottom:20px;">Ringkasan Lainnya</h2>
-            <table>
-                <tr>
-                    <td>Reservasi Bulan Ini</td>
-                    <td style="text-align:right; font-weight:600;">{{ $bulanIni }}</td>
-                </tr>
-                <tr>
-                    <td>Total Menu</td>
-                    <td style="text-align:right; font-weight:600;">{{ $totalMenu }}</td>
-                </tr>
-                <tr>
-                    <td>Menu Populer</td>
-                    <td style="text-align:right; font-weight:600;">{{ $menuPopuler }}</td>
-                </tr>
-                <tr>
-                    <td>Total Kategori</td>
-                    <td style="text-align:right; font-weight:600;">{{ $totalKategori }}</td>
-                </tr>
-            </table>
+    {{-- Status Reservasi --}}
+    <div class="card" style="padding:22px 24px;">
+        <h3 style="margin:0 0 16px; font-size:16px; color:#3f2a20;">Status Reservasi</h3>
+        @php
+            $total = max(1, ($pending ?? 0) + ($confirmed ?? 0) + ($cancelled ?? 0));
+        @endphp
+        <div style="margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+                <span>Pending</span><strong>{{ $pending ?? 0 }}</strong>
+            </div>
+            <div style="height:8px; background:#eee; border-radius:10px; overflow:hidden;">
+                <div style="height:100%; width:{{ round(($pending ?? 0) / $total * 100) }}%; background:#d4a017;"></div>
+            </div>
         </div>
-
-        <!-- Status Breakdown -->
-        <div class="card">
-            <h2 style="font-size:17px; margin-bottom:20px;">Status Reservasi</h2>
-            @foreach($statusData as $status => $jumlah)
-                <div style="margin-bottom:14px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                        <span>{{ $status }}</span>
-                        <strong>{{ $jumlah }}</strong>
-                    </div>
-                    <div style="background:#eee; height:8px; border-radius:10px; overflow:hidden;">
-                        @php
-                            $persen = $totalReservasi > 0 ? ($jumlah / $totalReservasi * 100) : 0;
-                        @endphp
-                        <div style="height:100%; width:{{ $persen }}%; background:{{ $status == 'Pending' ? '#e67e22' : ($status == 'Confirmed' ? '#27ae60' : '#e74c3c') }};"></div>
-                    </div>
-                </div>
-            @endforeach
+        <div style="margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+                <span>Confirmed</span><strong>{{ $confirmed ?? 0 }}</strong>
+            </div>
+            <div style="height:8px; background:#eee; border-radius:10px; overflow:hidden;">
+                <div style="height:100%; width:{{ round(($confirmed ?? 0) / $total * 100) }}%; background:#27ae60;"></div>
+            </div>
+        </div>
+        <div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+                <span>Cancelled</span><strong>{{ $cancelled ?? 0 }}</strong>
+            </div>
+            <div style="height:8px; background:#eee; border-radius:10px; overflow:hidden;">
+                <div style="height:100%; width:{{ round(($cancelled ?? 0) / $total * 100) }}%; background:#e74c3c;"></div>
+            </div>
         </div>
     </div>
+</div>
 
-    <!-- Reservasi Terbaru -->
-    <div class="card">
-        <h2 style="font-size:17px; margin-bottom:20px;">Reservasi Terbaru</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama</th>
-                    <th>Tanggal</th>
-                    <th>Waktu</th>
-                    <th>Jumlah</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($recentReservasi as $item)
-                    <tr>
-                        <td><strong>{{ $item->nama }}</strong></td>
-                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d M Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($item->waktu)->format('H:i') }}</td>
-                        <td>{{ $item->jumlah_orang }} Orang</td>
-                        <td>
-                            @if($item->status == 'pending')
-                                <span style="background:#fff3cd; color:#856404; padding:3px 10px; border-radius:20px; font-size:12px;">Pending</span>
-                            @elseif($item->status == 'confirmed')
-                                <span style="background:#d4edda; color:#155724; padding:3px 10px; border-radius:20px; font-size:12px;">Confirmed</span>
-                            @else
-                                <span style="background:#f8d7da; color:#721c24; padding:3px 10px; border-radius:20px; font-size:12px;">Cancelled</span>
-                            @endif
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="text-align:center; padding:30px; color:#999;">Belum ada data</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
+{{-- Reservasi Terbaru — biarkan tabel yang sudah ada --}}
+<div class="card" style="padding:22px 24px;">
+    <h3 style="margin:0 0 16px; font-size:16px; color:#3f2a20;">Reservasi Terbaru</h3>
+    {{-- tempel tabel yang sudah kamu punya di sini --}}
+</div>
+
+<style>
+@media (max-width: 900px) {
+    div[style*="grid-template-columns:repeat(4"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    div[style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+}
+</style>
 @endsection

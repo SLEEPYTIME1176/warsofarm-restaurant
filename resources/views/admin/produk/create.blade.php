@@ -29,11 +29,34 @@
     </div>
 
     <div style="margin-bottom:20px;">
-        <label style="display:block; font-weight:600; margin-bottom:8px;">Harga</label>
-        <input type="number" name="harga" required min="0"
-               style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;"
-               placeholder="28000">
-    </div>
+    <label style="display:block; font-weight:600; margin-bottom:8px;">Harga</label>
+    <input type="number" name="harga" required min="0"
+           style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;"
+           placeholder="28000">
+</div>
+
+<div class="form-group">
+    <label>Badge (opsional)</label>
+    <select name="badge">
+        <option value="">— Tidak ada —</option>
+        <option value="terlaris" {{ old('badge') == 'terlaris' ? 'selected' : '' }}>🔥 Terlaris</option>
+        <option value="favorit" {{ old('badge') == 'favorit' ? 'selected' : '' }}>⭐ Favorit</option>
+        <option value="baru" {{ old('badge') == 'baru' ? 'selected' : '' }}>🆕 Baru</option>
+    </select>
+</div>
+
+{{-- ===== TAMBAHKAN INI ===== --}}
+<div style="margin-bottom:20px;">
+    <label style="display:block; font-weight:600; margin-bottom:8px;">Satuan</label>
+    <select name="satuan"
+            style="width:100%; padding:12px 16px; border:1px solid #ddd; border-radius:10px; font-size:15px;">
+        <option value="porsi">Porsi</option>
+        <option value="kg">Kg</option>
+        <option value="500g">500g</option>
+        <option value="250g">250g</option>
+        <option value="pax">Pax</option>
+    </select>
+</div>
 
     <div style="margin-bottom:20px;">
         <label style="display:block; font-weight:600; margin-bottom:8px;">Stok</label>

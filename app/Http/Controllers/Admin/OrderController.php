@@ -16,19 +16,60 @@ class OrderController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:pending,process,done,cancelled',
-        ]);
+        $order = Order::with('items')->findOrFail($id);
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
 
-        $order = Order::findOrFail($id);
-        $order->update(['status' => $request->status]);
+        // Kurangi stok: pending → process atau done
+        if (
+            in_array($newStatus, ['process', 'done']) &&
+            $oldStatus === 'pending'
+        ) {
+            foreach ($order->items as $item) {
+                $produk = \App\Models\Produk::find($item->produk_id);
+                if ($produk) {
+                    $produk->stok = max(0, $produk->stok - $item->qty);
+                    $produk->save();
+                }
+            }
+        }
 
-        return redirect()->route('admin.order.index')->with('success', 'Status pesanan berhasil diubah');
+        $order->update(['status' => $newStatus]);
+
+        return back()->with('success', 'Status pesanan diperbarui');
     }
 
     public function destroy($id)
     {
         Order::findOrFail($id)->delete();
         return redirect()->route('admin.order.index')->with('success', 'Pesanan berhasil dihapus');
+    }
+
+    public function cancel(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_batal' => 'required|string|max:255',
+        ]);
+
+        $order = Order::with('items')->findOrFail($id);
+        $oldStatus = $order->status;
+
+        // Kembalikan stok jika sebelumnya sudah process/done
+        if (in_array($oldStatus, ['process', 'done'])) {
+            foreach ($order->items as $item) {
+                $produk = \App\Models\Produk::find($item->produk_id);
+                if ($produk) {
+                    $produk->stok += $item->qty;
+                    $produk->save();
+                }
+            }
+        }
+
+        $order->update([
+            'status' => 'cancelled',
+            'alasan_batal' => $request->alasan_batal,
+        ]);
+
+        return back()->with('success', 'Pesanan ' . $order->kode_order . ' berhasil dibatalkan.');
     }
 }
